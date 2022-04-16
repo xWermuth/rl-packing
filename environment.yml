@@ -1,0 +1,9 @@
+name: pip-env
+dependencies:
+  - python
+  - pip
+  - pip:
+      - gym
+      - numpy
+      - keras
+      - tensorflow
