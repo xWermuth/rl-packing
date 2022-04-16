@@ -46,8 +46,8 @@ while True:
             # env.render(); Adding this line would show the attempts
             # of the agent in a pop up window.
 
-            print("state: ", state)
-            print("action: ", action)
+            # print("state: ", state)
+            # print("action: ", action)
             # Run agent in envoriment
             state = tf.convert_to_tensor(state)
             state = tf.expand_dims(state, 0)
@@ -61,8 +61,8 @@ while True:
             action = np.random.choice(num_actions, p=np.squeeze(action_probs))
             action_props_history.append(tf.math.log(action_probs[0, action]))
 
-            print("action_probs: ", action_probs)
-            print("Action after: ", action)
+            # print("action_probs: ", action_probs)
+            # print("Action after: ", action)
 
             # Apply the sampled action in our environment
             state, reward, done, _ = env.step(action)
