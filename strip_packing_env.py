@@ -15,7 +15,7 @@ class Dimension():
 
 class Rect(Dimension):
     def __init__(self, width: int, height: int, x: int, y: int) -> None:
-        super(width, height)
+        super().__init__(width, height)
         self.x = x
         self.y = y
 
@@ -23,12 +23,14 @@ class Rect(Dimension):
 class FirstFitStrip:
     def __init__(self, strip_height, strip_width):
         '''
-        This cannot handle dynamic sized bin nor number of bins. 
+        This cannot handle dynamic sized bin nor number of bins.
         '''
         # Set strip dimensions
         self.strip_height = strip_height
         self.strip_width = strip_width
-        self.cells = []
+
+        # Cells should always have one free cell
+        self.cells = [Dimension(strip_width, strip_height)]
         # Rects that are placed
         self.state = []
     # Pack
@@ -65,7 +67,6 @@ class FirstFitStrip:
             for (i, cell) in enumerate(self.cells):
                 if not self._overlaps(rect, cell):
                     return cell
-
         return None
 
     def _get_state(self):
@@ -76,7 +77,19 @@ class FirstFitStrip:
             - Placement height
             - Max min height difference
         '''
-        pass
+        state = [
+            # Free cells
+
+            # Occupied cells
+
+            # Area used
+
+            # Placement height
+
+            # Max min height difference
+        ]
+
+        return state
 
     def step(self, action: list, rect: Dimension):
         '''
@@ -85,10 +98,12 @@ class FirstFitStrip:
         done = False
         reward = 0
         state = []
+        could_place = False
 
         alignment, cell_location = self._get_action(action)
 
-        could_place = self._place_rect(rect, alignment, cell_location)
+        if (cell_location is not None):
+            could_place = self._place_rect(rect, alignment, cell_location)
 
         if not could_place:
             reward = -10
@@ -102,17 +117,16 @@ class FirstFitStrip:
         self.cells = []
         return self.state
 
-    def _get_action(action: list):
-
+    def _get_action(self, action: list):
         # Determine alignment from action
         alignment = Alignment.RIGHT
         if(action[0] == 1):
             alignment = Alignment.LEFT
-        elif(action[1] == 1):
+        else:
             alignment = Alignment.RIGHT
 
         # Determine Cell location
-        cell_location = 0
+        cell_location = -1
         cells = action[3:len(action)]
 
         for(i, cell) in enumerate(cells):
@@ -120,20 +134,11 @@ class FirstFitStrip:
                 cell_location = i
                 break
 
+        if(cell_location == -1):
+            print("Could not find cell")
+            cell_location = None
+
         return alignment, cell_location
-
-    def _get_state():
-        state = [
-            # Free cells
-
-            # Occupied cells
-
-            # Placement height
-
-            # Max min height difference
-        ]
-
-        return state
 
     def compute_reward(self):
         pass
@@ -143,6 +148,19 @@ class RandService:
     def __init__(self, rects_length):
         self.rects_length = rects_length
 
-    def generateSet(self):
+    def generateSet(self, amount: int, min: int, max: int):
         '''Generate random data set'''
-        return []
+        return map(lambda _: Dimension(np.random.randint(min, max), np.random.randint(min, max)), range(amount))
+
+
+# Run
+
+test_rects = [Dimension(100, 200)]
+rand_service = RandService(test_rects)
+rects = rand_service.generateSet(10, 10, 30)
+
+
+pa = FirstFitStrip(10000, 400)
+
+for rect in rects:
+    pa.step([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], rect)
